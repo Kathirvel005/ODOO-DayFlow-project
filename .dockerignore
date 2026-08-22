@@ -1,0 +1,15 @@
+.git
+.gitignore
+.venv
+**/node_modules
+**/build
+**/.next
+**/.venv
+*.db
+*.sqlite3
+apps/web/out
+apps/web/.next
+apps/web/node_modules
+.gemini
+logs
+*.log

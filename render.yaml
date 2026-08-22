@@ -23,9 +23,10 @@ services:
         generateValue: true
       - key: PORT
         value: 8000
-      # Placeholders for keys to be set in the Render Dashboard
       - key: GEMINI_API_KEY
         sync: false
+      - key: CORS_ORIGINS
+        value: '["*"]'
 
   # Next.js Frontend Web Service
   - type: web
