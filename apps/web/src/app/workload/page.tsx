@@ -112,26 +112,27 @@ export default function WorkloadPage() {
             ) : (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={topTeamData} barSize={28}>
-                  <XAxis dataKey="name" tick={{ fill: "#71717a", fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: "#71717a", fontSize: 10 }} axisLine={false} tickLine={false} domain={[0, 100]} />
+                  <XAxis dataKey="name" tick={{ fill: "#929894", fontSize: 10 }} axisLine={false} tickLine={false} />
+
+                  <YAxis tick={{ fill: "#929894", fontSize: 10 }} axisLine={false} tickLine={false} domain={[0, 100]} />
                   <Tooltip
-                    contentStyle={{ background: "#18181b", border: "1px solid #27272a", borderRadius: 8, color: "#fff", fontSize: 12 }}
+                    contentStyle={{ background: "#202522", border: "none", borderRadius: 8, color: "#fff", fontSize: 12 }}
                     formatter={(v: any) => [`${v}%`, "Workload"]}
                   />
                   <Bar dataKey="score" radius={[4, 4, 0, 0]}>
                     {topTeamData.map((entry: any, index: number) => (
-                      <Cell key={index} fill={entry.score >= 80 ? "#ef4444" : entry.score >= 60 ? "#f59e0b" : "#10b981"} />
+                      <Cell key={index} fill={entry.score >= 80 ? "#B8665A" : entry.score >= 60 ? "#D5A574" : "#2F5D50"} />
                     ))}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             )}
           </div>
-
+ 
           {/* Radar */}
           <div className="glass-card rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
-              <Activity className="w-4 h-4 text-cyan-400" />
+            <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-4 flex items-center gap-2">
+              <Activity className="w-4 h-4 text-purple-500" />
               Capacity Pressure Radar
             </h3>
             {loading ? (
@@ -139,15 +140,16 @@ export default function WorkloadPage() {
             ) : (
               <ResponsiveContainer width="100%" height={200}>
                 <RadarChart data={radarData}>
-                  <PolarGrid stroke="#27272a" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fill: "#71717a", fontSize: 11 }} />
-                  <Radar dataKey="A" stroke="#a855f7" fill="#a855f7" fillOpacity={0.15} strokeWidth={2} />
-                  <Tooltip contentStyle={{ background: "#18181b", border: "1px solid #27272a", borderRadius: 8, color: "#fff", fontSize: 12 }} />
+                  <PolarGrid stroke="#E9E7E1" />
+                  <PolarAngleAxis dataKey="subject" tick={{ fill: "#929894", fontSize: 11 }} />
+                  <Radar dataKey="A" stroke="#2F5D50" fill="#6F9F8D" fillOpacity={0.15} strokeWidth={2} />
+                  <Tooltip contentStyle={{ background: "#202522", border: "none", borderRadius: 8, color: "#fff", fontSize: 12 }} />
                 </RadarChart>
               </ResponsiveContainer>
             )}
           </div>
         </div>
+
 
         {/* Filters + Table */}
         <div className="flex flex-wrap gap-3 items-center">

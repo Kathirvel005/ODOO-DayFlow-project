@@ -29,6 +29,20 @@ app.add_middleware(
 # Initialize DB Tables (Fallback for zero-config SQLite)
 Base.metadata.create_all(bind=engine)
 
+# Auto-seed database if empty
+try:
+    from apps.api.database import SessionLocal
+    from apps.api.models import User
+    db_session = SessionLocal()
+    if db_session.query(User).count() == 0:
+        logger.info("No users found in database. Running auto-seeding...")
+        from apps.api.seed import seed_db
+        seed_db()
+        logger.info("Database auto-seeding complete.")
+    db_session.close()
+except Exception as seed_err:
+    logger.error(f"Failed to auto-seed database: {seed_err}")
+
 # =====================================================================
 # REALTIME EVENTS SYSTEM (WEBSOCKETS)
 # =====================================================================

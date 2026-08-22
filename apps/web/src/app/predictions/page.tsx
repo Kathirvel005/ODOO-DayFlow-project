@@ -47,10 +47,10 @@ export default function PredictionsPage() {
   });
 
   const typeConfig: Record<string, { label: string; color: string; icon: React.ElementType; unit: string }> = {
-    WORKFORCE_AVAILABILITY: { label: "Workforce Availability", color: "#10b981", icon: Activity, unit: "%" },
-    WORKLOAD: { label: "Projected Workload", color: "#f59e0b", icon: BarChart2, unit: "%" },
-    ATTENDANCE_RISK: { label: "Attendance Risk", color: "#ef4444", icon: TrendingDown, unit: "%" },
-    OPERATIONAL_RISK: { label: "Operational Risk", color: "#a855f7", icon: Target, unit: "%" },
+    WORKFORCE_AVAILABILITY: { label: "Workforce Availability", color: "#2F5D50", icon: Activity, unit: "%" },
+    WORKLOAD: { label: "Projected Workload", color: "#A9B7AF", icon: BarChart2, unit: "%" },
+    ATTENDANCE_RISK: { label: "Attendance Risk", color: "#D5A574", icon: TrendingDown, unit: "%" },
+    OPERATIONAL_RISK: { label: "Operational Risk", color: "#B8665A", icon: Target, unit: "%" },
   };
 
   const avgConfidence = filtered.length > 0 
@@ -160,11 +160,11 @@ export default function PredictionsPage() {
                   </div>
                   <ResponsiveContainer width="100%" height={180}>
                     <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                      <XAxis dataKey="day" tick={{ fill: "#71717a", fontSize: 10 }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fill: "#71717a", fontSize: 10 }} axisLine={false} tickLine={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#E9E7E1" />
+                      <XAxis dataKey="day" tick={{ fill: "#929894", fontSize: 10 }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fill: "#929894", fontSize: 10 }} axisLine={false} tickLine={false} />
                       <Tooltip
-                        contentStyle={{ background: "#18181b", border: "1px solid #27272a", borderRadius: 8, color: "#fff", fontSize: 12 }}
+                        contentStyle={{ background: "#202522", border: "none", borderRadius: 8, color: "#fff", fontSize: 12 }}
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         formatter={((v: any, name: any) => [
                           `${v}${config.unit}`,

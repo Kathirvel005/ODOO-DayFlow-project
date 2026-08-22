@@ -23,7 +23,7 @@ try:
 except Exception as e:
     # If connection fails (e.g. Postgres not running), print error and fallback to SQLite
     print(f"Database connection failed: {e}. Falling back to SQLite.", file=sys.stderr)
-    settings.DATABASE_URL = "sqlite:///./nexora.db"
+    settings.DATABASE_URL = "sqlite:///./hrlinks.db"
     engine = create_engine(
         settings.DATABASE_URL,
         connect_args={"check_same_thread": False},

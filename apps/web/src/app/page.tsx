@@ -26,11 +26,11 @@ export default function Home() {
 
       <div className="flex flex-col items-center gap-6 z-10">
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center font-black text-3xl text-white shadow-xl shadow-purple-500/25 animate-pulse-ai">
-          N
+          H
         </div>
         <div className="text-center">
           <h1 className="text-2xl font-extrabold tracking-wider text-zinc-100 uppercase">
-            NEXORA
+            HR LINKS
           </h1>
           <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mt-1">
             Establishing Secure Connection...

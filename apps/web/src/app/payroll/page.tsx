@@ -115,17 +115,18 @@ export default function PayrollPage() {
           ) : (
             <ResponsiveContainer width="100%" height={160}>
               <BarChart data={monthlyChart} barSize={40}>
-                <XAxis dataKey="month" tick={{ fill: "#71717a", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "#71717a", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `₹${(v/1000).toFixed(0)}K`} />
+                <XAxis dataKey="month" tick={{ fill: "#929894", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "#929894", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `₹${(v/1000).toFixed(0)}K`} />
                 <Tooltip
-                  contentStyle={{ background: "#18181b", border: "1px solid #27272a", borderRadius: 8, color: "#fff", fontSize: 12 }}
+                  contentStyle={{ background: "#202522", border: "none", borderRadius: 8, color: "#fff", fontSize: 12 }}
                   formatter={(v: any) => [formatCurrency(v), "Net Payroll"]}
                 />
-                <Bar dataKey="total" radius={[4, 4, 0, 0]} fill="#a855f7">
+                <Bar dataKey="total" radius={[4, 4, 0, 0]} fill="#2F5D50">
                   {monthlyChart.map((_, i) => (
-                    <Cell key={i} fill={i === monthlyChart.length - 1 ? "#a855f7" : "#6d28d9"} />
+                    <Cell key={i} fill={i === monthlyChart.length - 1 ? "#2F5D50" : "#6F9F8D"} />
                   ))}
                 </Bar>
+
               </BarChart>
             </ResponsiveContainer>
           )}

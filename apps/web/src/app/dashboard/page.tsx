@@ -132,11 +132,14 @@ export default function DashboardPage() {
           
           <button 
             onClick={() => router.push("/simulation")}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-500 hover:bg-purple-600 font-semibold text-xs tracking-wider uppercase rounded-lg text-white transition shadow-lg shadow-purple-500/20"
+            className="flex items-center gap-2 px-4 py-2 bg-purple-500 hover:bg-purple-600 hover:-translate-y-px font-semibold text-xs tracking-wider uppercase rounded-lg text-white transition shadow-sm hover:shadow-md"
           >
             <Play className="w-3.5 h-3.5 fill-current" />
             Launch Simulation Lab
           </button>
+
+
+
         </div>
 
         {/* KPI Grid */}

@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { ClipboardList, Download, Users, BarChart2, TrendingUp, AlertTriangle, Calendar, Activity } from "lucide-react";
 import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
-const COLORS = ["#10b981", "#f59e0b", "#ef4444", "#a855f7", "#06b6d4"];
+const COLORS = ["#2F5D50", "#6F9F8D", "#A9B7AF", "#4D806D", "#D5A574"];
 
 export default function ReportsPage() {
   const { apiFetch } = useAuth();
@@ -59,9 +59,9 @@ export default function ReportsPage() {
   }));
 
   const riskDist = [
-    { name: "Low", value: report?.risk?.low_risk_count || 0, fill: "#10b981" },
-    { name: "Moderate", value: report?.risk?.moderate_risk_count || 0, fill: "#f59e0b" },
-    { name: "High", value: report?.risk?.high_risk_count || 0, fill: "#ef4444" },
+    { name: "Low", value: report?.risk?.low_risk_count || 0, fill: "#2F5D50" },
+    { name: "Moderate", value: report?.risk?.moderate_risk_count || 0, fill: "#D5A574" },
+    { name: "High", value: report?.risk?.high_risk_count || 0, fill: "#B8665A" },
   ];
 
   const StatBlock = ({ label, value, sub }: { label: string; value: string | number; sub?: string }) => (
@@ -119,9 +119,9 @@ export default function ReportsPage() {
             {loading ? <div className="h-48 bg-zinc-800 rounded animate-pulse" /> : (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={empByDept} barSize={32}>
-                  <XAxis dataKey="name" tick={{ fill: "#71717a", fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: "#71717a", fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ background: "#18181b", border: "1px solid #27272a", borderRadius: 8, color: "#fff", fontSize: 12 }} />
+                  <XAxis dataKey="name" tick={{ fill: "#929894", fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: "#929894", fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={{ background: "#202522", border: "none", borderRadius: 8, color: "#fff", fontSize: 12 }} />
                   <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                     {empByDept.map((entry: any, i: number) => <Cell key={i} fill={entry.fill} />)}
                   </Bar>
@@ -141,8 +141,8 @@ export default function ReportsPage() {
                   <Pie data={statusPie} cx="50%" cy="50%" innerRadius={55} outerRadius={80} dataKey="value" paddingAngle={2}>
                     {statusPie.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
                   </Pie>
-                  <Tooltip contentStyle={{ background: "#18181b", border: "1px solid #27272a", borderRadius: 8, color: "#fff", fontSize: 12 }} />
-                  <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11, color: "#a1a1aa" }} />
+                  <Tooltip contentStyle={{ background: "#202522", border: "none", borderRadius: 8, color: "#fff", fontSize: 12 }} />
+                  <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11, color: "#929894" }} />
                 </PieChart>
               </ResponsiveContainer>
             )}
@@ -162,8 +162,8 @@ export default function ReportsPage() {
                   <Pie data={leaveTypePie} cx="50%" cy="50%" outerRadius={80} dataKey="value" paddingAngle={2}>
                     {leaveTypePie.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                   </Pie>
-                  <Tooltip contentStyle={{ background: "#18181b", border: "1px solid #27272a", borderRadius: 8, color: "#fff", fontSize: 12 }} />
-                  <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11, color: "#a1a1aa" }} />
+                  <Tooltip contentStyle={{ background: "#202522", border: "none", borderRadius: 8, color: "#fff", fontSize: 12 }} />
+                  <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11, color: "#929894" }} />
                 </PieChart>
               </ResponsiveContainer>
             )}
@@ -178,9 +178,9 @@ export default function ReportsPage() {
               <>
                 <ResponsiveContainer width="100%" height={160}>
                   <BarChart data={riskDist} barSize={60}>
-                    <XAxis dataKey="name" tick={{ fill: "#71717a", fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fill: "#71717a", fontSize: 10 }} axisLine={false} tickLine={false} />
-                    <Tooltip contentStyle={{ background: "#18181b", border: "1px solid #27272a", borderRadius: 8, color: "#fff", fontSize: 12 }} />
+                    <XAxis dataKey="name" tick={{ fill: "#929894", fontSize: 11 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: "#929894", fontSize: 10 }} axisLine={false} tickLine={false} />
+                    <Tooltip contentStyle={{ background: "#202522", border: "none", borderRadius: 8, color: "#fff", fontSize: 12 }} />
                     <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                       {riskDist.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
                     </Bar>

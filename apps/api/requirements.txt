@@ -13,4 +13,5 @@ pandas
 redis
 fakeredis
 jinja2
+psycopg2-binary
 python-dateutil

@@ -25,7 +25,7 @@ export default function AICopilotPage() {
     {
       id: "initial-1",
       sender: "ai",
-      text: "Hello! I am Nexora AI, your workforce intelligence assistant. You can ask me questions about team risks, workloads, attendance anomalies, or simulate scenarios.",
+      text: "Hello! I am HR Links AI, your workforce intelligence assistant. You can ask me questions about team risks, workloads, attendance anomalies, or simulate scenarios.",
       timestamp: new Date().toISOString()
     }
   ]);
@@ -243,7 +243,7 @@ export default function AICopilotPage() {
             >
               <input 
                 type="text" 
-                placeholder="Ask NEXORA AI... e.g. Which team is at risk?" 
+                placeholder="Ask HR Links AI... e.g. Which team is at risk?" 
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 disabled={loading}

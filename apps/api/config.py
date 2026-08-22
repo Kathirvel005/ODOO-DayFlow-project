@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     
     # Database (Postgres default, auto-fallback to SQLite in code if connection fails)
-    DATABASE_URL: str = "sqlite:///./nexora.db"
+    DATABASE_URL: str = "sqlite:///./hrlinks.db"
     
     # Redis (Optional, fallback to in-memory in code if missing/connection fails)
     REDIS_URL: str = ""
