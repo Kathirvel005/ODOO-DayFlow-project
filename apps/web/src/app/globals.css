@@ -96,8 +96,8 @@
   --color-zinc-400: var(--text-secondary);
   --color-zinc-300: var(--text-secondary);
   --color-zinc-200: var(--text-primary);
-  --color-zinc-100: var(--background-secondary);
-  --color-zinc-50: var(--surface);
+  --color-zinc-100: var(--text-primary);
+  --color-zinc-50: var(--text-primary);
   
   /* Map purple → rose-red (primary brand) */
   --color-purple-50:  var(--primary-soft);
@@ -290,6 +290,24 @@ header {
   box-shadow: var(--shadow-md) !important;
   border-color: var(--border) !important;
   background: var(--surface) !important;
+}
+
+/* ── Metric / KPI Numbers & Headings High Contrast ───────────────────────────── */
+.glass-card .text-2xl,
+.glass-card .text-xl,
+.glass-card .text-3xl,
+.glass-card .text-4xl,
+.glass-card .text-lg,
+.kpi-value,
+.stat-value {
+  color: var(--text-primary) !important;
+}
+
+.glass-card h1,
+.glass-card h2,
+.glass-card h3,
+.glass-card h4 {
+  color: var(--text-primary) !important;
 }
 
 .glass-input {

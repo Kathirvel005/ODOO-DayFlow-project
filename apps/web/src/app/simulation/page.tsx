@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import AppShell from "@/components/AppShell";
 import { useAuth } from "@/context/AuthContext";
-import { PlayCircle, ShieldAlert, Activity, Users, Clock, Trash2, Info, CheckCircle, HelpCircle } from "lucide-react";
+import { PlayCircle, Trash2, Info, CheckCircle } from "lucide-react";
 
 interface Simulation {
   id: string;

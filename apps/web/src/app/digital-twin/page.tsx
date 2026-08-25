@@ -92,19 +92,23 @@ export default function DigitalTwinPage() {
         });
 
         // Build tree children references
-        let rootNodeId = "";
+        const rootNodeIds: string[] = [];
         nodeMap.forEach((node) => {
           if (node.manager_id && nodeMap.has(node.manager_id)) {
             nodeMap.get(node.manager_id).children.push(node.id);
           } else {
-            rootNodeId = node.id; // CEO or top manager
+            rootNodeIds.push(node.id);
           }
         });
 
         // Compute layout using Breadth-First-Search (BFS) layered coordinates
         const layers: { [key: number]: string[] } = {};
+        const visited = new Set<string>();
         
         function traverse(nodeId: string, depth: number) {
+          if (visited.has(nodeId)) return;
+          visited.add(nodeId);
+
           if (!layers[depth]) layers[depth] = [];
           layers[depth].push(nodeId);
           
@@ -112,10 +116,17 @@ export default function DigitalTwinPage() {
           childs.forEach((cId: string) => traverse(cId, depth + 1));
         }
 
-        if (rootNodeId) traverse(rootNodeId, 0);
+        rootNodeIds.forEach(rId => traverse(rId, 0));
+
+        // Add any remaining unvisited nodes to layer 0
+        nodeMap.forEach((node) => {
+          if (!visited.has(node.id)) {
+            traverse(node.id, 0);
+          }
+        });
 
         // Assign visual positions (x, y)
-        // Layer height spacing: 140px. Node width spacing: 130px.
+        // Layer height spacing: 160px. Node width spacing: 140px.
         const nodePositions: Node[] = [];
         const layerHeight = 160;
         const nodeWidth = 140;

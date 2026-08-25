@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import AppShell from "@/components/AppShell";
 import { useAuth } from "@/context/AuthContext";
-import { ShieldAlert, AlertTriangle, AlertCircle, Bot, Users, ArrowRight, Activity } from "lucide-react";
+import { ShieldAlert, Bot, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function RiskIntelligencePage() {

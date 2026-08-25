@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import AppShell from "@/components/AppShell";
 import { useAuth } from "@/context/AuthContext";
 import { Compass, TrendingUp, TrendingDown, Activity, Calendar, Target, BarChart2 } from "lucide-react";
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine } from "recharts";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 const HORIZON_OPTIONS = [
   { label: "7 Days", value: 7 },
@@ -25,7 +25,28 @@ export default function PredictionsPage() {
       try {
         setLoading(true);
         const res = await apiFetch(`/api/predictions?horizon=${horizon}`);
-        setPredictions(Array.isArray(res) ? res : res.predictions || []);
+        let list: any[] = [];
+        if (Array.isArray(res)) {
+          list = res;
+        } else if (res && typeof res === "object") {
+          Object.entries(res).forEach(([key, f]: [string, any]) => {
+            if (f && Array.isArray(f.forecast)) {
+              const target_type = f.target_type || key.toUpperCase();
+              f.forecast.forEach((pt: any, idx: number) => {
+                list.push({
+                  id: `${target_type}-${idx}-${pt.date}`,
+                  target_type,
+                  predicted_value: pt.value ?? pt.predicted_value,
+                  lower_bound: pt.lower_bound,
+                  upper_bound: pt.upper_bound,
+                  confidence: f.confidence ?? 0.85,
+                  created_at: pt.date || new Date().toISOString()
+                });
+              });
+            }
+          });
+        }
+        setPredictions(list);
       } catch (e) {
         console.error(e);
       } finally {
@@ -74,7 +95,7 @@ export default function PredictionsPage() {
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-zinc-100 flex items-center gap-2">
               <Compass className="w-6 h-6 text-purple-400" />
               Prediction Center
             </h1>
@@ -103,7 +124,7 @@ export default function PredictionsPage() {
               <div className={`w-8 h-8 rounded-lg bg-${color}-400/10 flex items-center justify-center mb-2`}>
                 <Icon className={`w-4 h-4 text-${color}-400`} />
               </div>
-              <div className="text-2xl font-bold text-white">{value}</div>
+              <div className="text-2xl font-black kpi-value">{value}</div>
               <div className="text-xs text-zinc-400 mt-1">{label}</div>
             </div>
           ))}
@@ -148,7 +169,7 @@ export default function PredictionsPage() {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <config.icon className="w-4 h-4" style={{ color: config.color }} />
-                      <h3 className="text-sm font-semibold text-white">{config.label}</h3>
+                      <h3 className="text-sm font-semibold text-zinc-100">{config.label}</h3>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-zinc-500">{items.length} data points</span>
@@ -177,8 +198,8 @@ export default function PredictionsPage() {
                     </LineChart>
                   </ResponsiveContainer>
                   <div className="mt-3 flex gap-4 text-xs text-zinc-500">
-                    <span>Current: <span className="text-white font-medium">{firstVal?.toFixed(1)}{config.unit}</span></span>
-                    <span>Projected: <span className="text-white font-medium">{lastVal?.toFixed(1)}{config.unit}</span></span>
+                    <span>Current: <span className="text-zinc-100 font-medium">{firstVal?.toFixed(1)}{config.unit}</span></span>
+                    <span>Projected: <span className="text-zinc-100 font-medium">{lastVal?.toFixed(1)}{config.unit}</span></span>
                     <span>Confidence: <span className="text-green-400 font-medium">{Math.round((items[0]?.confidence || 0) * 100)}%</span></span>
                   </div>
                 </div>
@@ -191,7 +212,7 @@ export default function PredictionsPage() {
         {filtered.length > 0 && (
           <div className="glass-card rounded-xl overflow-hidden">
             <div className="px-5 py-4 border-b border-zinc-800">
-              <h3 className="text-sm font-semibold text-white">Detailed Forecast Records</h3>
+              <h3 className="text-sm font-semibold text-zinc-100">Detailed Forecast Records</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -210,7 +231,7 @@ export default function PredictionsPage() {
                         <td className="px-4 py-3">
                           <span className="text-xs font-medium text-zinc-300">{cfg.label}</span>
                         </td>
-                        <td className="px-4 py-3 text-sm font-bold text-white">{p.predicted_value?.toFixed(2)}{cfg.unit}</td>
+                        <td className="px-4 py-3 text-sm font-bold text-zinc-100">{p.predicted_value?.toFixed(2)}{cfg.unit}</td>
                         <td className="px-4 py-3 text-sm text-zinc-400">{p.lower_bound?.toFixed(2)}{cfg.unit}</td>
                         <td className="px-4 py-3 text-sm text-zinc-400">{p.upper_bound?.toFixed(2)}{cfg.unit}</td>
                         <td className="px-4 py-3">

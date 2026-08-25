@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import AppShell from "@/components/AppShell";
 import { useAuth } from "@/context/AuthContext";
-import { BarChart3, AlertTriangle, TrendingUp, Activity, User, Zap, Clock } from "lucide-react";
+import { BarChart3, AlertTriangle, TrendingUp, Activity, User, Zap } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, RadarChart, PolarGrid, PolarAngleAxis, Radar } from "recharts";
 
 export default function WorkloadPage() {
@@ -23,12 +23,12 @@ export default function WorkloadPage() {
           apiFetch("/api/employees?limit=200")
         ]);
         setData(wlRes);
-        const empList: any[] = empRes.employees || [];
-        const assignments: any[] = wlRes.assignments || [];
+        const empList: any[] = empRes.data || empRes.employees || [];
+        const assignments: any[] = wlRes.workloads || wlRes.assignments || [];
         // Merge employee names into assignments
         const merged = assignments.map((a: any) => {
           const emp = empList.find((e: any) => e.id === a.employee_id);
-          return { ...a, name: emp?.name || a.employee_id?.slice(0, 8), designation: emp?.designation || "" };
+          return { ...a, name: a.employee_name || emp?.name || a.employee_id?.slice(0, 8), designation: a.team_name || emp?.designation || "" };
         });
         setEmployees(merged);
       } catch (e) {
@@ -61,9 +61,9 @@ export default function WorkloadPage() {
 
   const radarData = [
     { subject: "Tasks", A: Math.round(data?.summary?.average_workload || 0) },
-    { subject: "Hours", A: Math.round((data?.summary?.overloaded_count || 0) / Math.max(employees.length, 1) * 100) },
-    { subject: "Pressure", A: Math.round(data?.summary?.overloaded_count || 0) },
-    { subject: "Projects", A: Math.round(data?.summary?.critical_count || 0) },
+    { subject: "Hours", A: Math.round(((data?.summary?.overloaded_employees ?? data?.summary?.overloaded_count ?? 0) / Math.max(employees.length, 1)) * 100) },
+    { subject: "Pressure", A: Math.round(data?.summary?.overloaded_employees ?? data?.summary?.overloaded_count ?? 0) },
+    { subject: "Projects", A: Math.round(data?.summary?.critical_count ?? data?.summary?.overloaded_employees ?? 0) },
   ];
 
   return (
@@ -72,7 +72,7 @@ export default function WorkloadPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-zinc-100 flex items-center gap-2">
               <BarChart3 className="w-6 h-6 text-purple-400" />
               Workload Intelligence
             </h1>
@@ -84,15 +84,15 @@ export default function WorkloadPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: "Avg Workload", value: loading ? "—" : `${Math.round(data?.summary?.average_workload || 0)}%`, icon: Activity, color: "purple", sub: "Across all employees" },
-            { label: "Overloaded", value: loading ? "—" : data?.summary?.overloaded_count || 0, icon: AlertTriangle, color: "amber", sub: ">80% workload" },
-            { label: "Critical Load", value: loading ? "—" : data?.summary?.critical_count || 0, icon: Zap, color: "red", sub: ">90% workload" },
+            { label: "Overloaded", value: loading ? "—" : data?.summary?.overloaded_employees ?? data?.summary?.overloaded_count ?? 0, icon: AlertTriangle, color: "amber", sub: ">75% workload" },
+            { label: "Critical Load", value: loading ? "—" : data?.summary?.critical_count ?? data?.summary?.overloaded_employees ?? 0, icon: Zap, color: "red", sub: ">75% workload" },
             { label: "Monitored", value: loading ? "—" : employees.length, icon: User, color: "green", sub: "Active employees" },
           ].map(({ label, value, icon: Icon, color, sub }) => (
             <div key={label} className="glass-card rounded-xl p-4">
               <div className={`w-8 h-8 rounded-lg bg-${color}-400/10 flex items-center justify-center mb-2`}>
                 <Icon className={`w-4 h-4 text-${color}-400`} />
               </div>
-              <div className="text-2xl font-bold text-white">{value}</div>
+              <div className="text-2xl font-black kpi-value">{value}</div>
               <div className="text-xs text-zinc-400 mt-1">{label}</div>
               <div className="text-xs text-zinc-600 mt-0.5">{sub}</div>
             </div>
@@ -103,7 +103,7 @@ export default function WorkloadPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Department chart */}
           <div className="glass-card rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-zinc-100 mb-4 flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-purple-400" />
               Workload by Department
             </h3>
@@ -196,7 +196,7 @@ export default function WorkloadPage() {
                           <div className="w-7 h-7 rounded-full bg-purple-500/20 flex items-center justify-center">
                             <User className="w-3.5 h-3.5 text-purple-400" />
                           </div>
-                          <span className="text-sm font-medium text-white">{e.name}</span>
+                          <span className="text-sm font-medium text-zinc-100">{e.name}</span>
                         </div>
                       </td>
                       <td className="px-4 py-3 text-xs text-zinc-400">{e.designation}</td>

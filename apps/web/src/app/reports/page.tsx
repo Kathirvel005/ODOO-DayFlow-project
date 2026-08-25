@@ -8,6 +8,14 @@ import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, 
 
 const COLORS = ["#2F5D50", "#6F9F8D", "#A9B7AF", "#4D806D", "#D5A574"];
 
+const StatBlock = ({ label, value, sub }: { label: string; value: string | number; sub?: string }) => (
+  <div className="flex flex-col">
+    <span className="text-xs text-zinc-500">{label}</span>
+    <span className="text-lg font-bold text-zinc-100 kpi-value">{value}</span>
+    {sub && <span className="text-xs text-zinc-600">{sub}</span>}
+  </div>
+);
+
 export default function ReportsPage() {
   const { apiFetch } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -64,21 +72,13 @@ export default function ReportsPage() {
     { name: "High", value: report?.risk?.high_risk_count || 0, fill: "#B8665A" },
   ];
 
-  const StatBlock = ({ label, value, sub }: { label: string; value: string | number; sub?: string }) => (
-    <div className="flex flex-col">
-      <span className="text-xs text-zinc-500">{label}</span>
-      <span className="text-lg font-bold text-white">{value}</span>
-      {sub && <span className="text-xs text-zinc-600">{sub}</span>}
-    </div>
-  );
-
   return (
     <AppShell>
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-zinc-100 flex items-center gap-2">
               <ClipboardList className="w-6 h-6 text-purple-400" />
               Executive Reports
             </h1>
@@ -93,7 +93,7 @@ export default function ReportsPage() {
 
         {/* Section: Workforce Summary */}
         <div className="glass-card rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-zinc-100 mb-4 flex items-center gap-2">
             <Users className="w-4 h-4 text-purple-400" /> Workforce Summary
           </h2>
           {loading ? (
@@ -113,7 +113,7 @@ export default function ReportsPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Dept Distribution */}
           <div className="glass-card rounded-xl p-5 md:col-span-2">
-            <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-zinc-100 mb-4 flex items-center gap-2">
               <BarChart2 className="w-4 h-4 text-cyan-400" /> Headcount by Department
             </h3>
             {loading ? <div className="h-48 bg-zinc-800 rounded animate-pulse" /> : (
@@ -132,7 +132,7 @@ export default function ReportsPage() {
 
           {/* Status Pie */}
           <div className="glass-card rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-zinc-100 mb-4 flex items-center gap-2">
               <Activity className="w-4 h-4 text-green-400" /> Employment Status
             </h3>
             {loading ? <div className="h-48 bg-zinc-800 rounded animate-pulse" /> : (
@@ -153,7 +153,7 @@ export default function ReportsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Leave Distribution */}
           <div className="glass-card rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-zinc-100 mb-4 flex items-center gap-2">
               <Calendar className="w-4 h-4 text-amber-400" /> Leave Requests by Type
             </h3>
             {loading ? <div className="h-48 bg-zinc-800 rounded animate-pulse" /> : (
@@ -171,7 +171,7 @@ export default function ReportsPage() {
 
           {/* Risk Distribution */}
           <div className="glass-card rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-zinc-100 mb-4 flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-red-400" /> Risk Level Distribution
             </h3>
             {loading ? <div className="h-48 bg-zinc-800 rounded animate-pulse" /> : (
@@ -187,7 +187,7 @@ export default function ReportsPage() {
                   </BarChart>
                 </ResponsiveContainer>
                 <div className="mt-3 flex gap-4 text-xs text-zinc-400">
-                  <span>Average Risk: <span className="text-white font-medium">{report?.risk?.average_risk?.toFixed(1) || "—"}%</span></span>
+                  <span>Average Risk: <span className="text-zinc-100 font-medium">{report?.risk?.average_risk?.toFixed(1) || "—"}%</span></span>
                   <span>High Risk: <span className="text-red-400 font-medium">{report?.risk?.high_risk_count || 0} employees</span></span>
                 </div>
               </>
@@ -198,7 +198,7 @@ export default function ReportsPage() {
         {/* Attendance & Payroll Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="glass-card rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-zinc-100 mb-4 flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-green-400" /> Attendance Overview
             </h3>
             {loading ? (
@@ -214,7 +214,7 @@ export default function ReportsPage() {
           </div>
 
           <div className="glass-card rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-zinc-100 mb-4 flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-purple-400" /> Payroll Summary
             </h3>
             {loading ? (

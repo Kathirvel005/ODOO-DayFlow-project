@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { 
-  Play, ChevronRight, ChevronLeft, LogOut, Bot, ShieldAlert, 
-  GitBranch, PlayCircle, BarChart3, Clock, AlertTriangle, CheckCircle 
+  ChevronRight, ChevronLeft, LogOut, Bot, 
+  PlayCircle, AlertTriangle, CheckCircle 
 } from "lucide-react";
 
 export default function ExecutiveDemoPage() {

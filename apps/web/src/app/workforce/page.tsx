@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import AppShell from "@/components/AppShell";
 import { useAuth } from "@/context/AuthContext";
-import { Search, Plus, Filter, ArrowUpDown, Eye, Trash2, X } from "lucide-react";
+import { Search, Plus, Eye, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface Employee {

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import AppShell from "@/components/AppShell";
 import { useAuth } from "@/context/AuthContext";
-import { Clock, AlertTriangle, CheckCircle, XCircle, TrendingDown, Activity, User, Calendar } from "lucide-react";
+import { Clock, AlertTriangle, CheckCircle, XCircle, Activity, User, Calendar } from "lucide-react";
 
 export default function AttendancePage() {
   const { apiFetch } = useAuth();
@@ -68,13 +68,15 @@ export default function AttendancePage() {
     );
   };
 
+  const skeletonWidths = [80, 65, 75, 90, 70, 85, 60];
+
   return (
     <AppShell>
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-zinc-100 flex items-center gap-2">
               <Clock className="w-6 h-6 text-purple-400" />
               Attendance Intelligence
             </h1>
@@ -99,7 +101,7 @@ export default function AttendancePage() {
               <div className={`w-8 h-8 rounded-lg bg-${color}-400/10 flex items-center justify-center mb-2`}>
                 <Icon className={`w-4 h-4 text-${color}-400`} />
               </div>
-              <div className="text-2xl font-bold text-white">{loading ? "—" : value}</div>
+              <div className="text-2xl font-black kpi-value">{loading ? "—" : value}</div>
               <div className="text-xs text-zinc-400 mt-1">{label}</div>
             </div>
           ))}
@@ -148,7 +150,7 @@ export default function AttendancePage() {
                     <tr key={i}>
                       {[...Array(7)].map((_, j) => (
                         <td key={j} className="px-4 py-3">
-                          <div className="h-4 bg-zinc-800 rounded animate-pulse" style={{ width: `${60 + Math.random() * 40}%` }} />
+                          <div className="h-4 bg-zinc-800 rounded animate-pulse" style={{ width: `${skeletonWidths[(i + j) % skeletonWidths.length]}%` }} />
                         </td>
                       ))}
                     </tr>
@@ -166,7 +168,7 @@ export default function AttendancePage() {
                             <User className="w-3.5 h-3.5 text-purple-400" />
                           </div>
                           <div>
-                            <div className="text-sm font-medium text-white">{r.employee_name || r.employee_id?.slice(0, 8)}</div>
+                            <div className="text-sm font-medium text-zinc-100">{r.employee_name || r.employee_id?.slice(0, 8)}</div>
                             <div className="text-xs text-zinc-500">{r.department || ""}</div>
                           </div>
                         </div>

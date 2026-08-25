@@ -84,6 +84,18 @@ class ConnectionManager:
 
 ws_manager = ConnectionManager()
 
+def sync_broadcast(event_type: str, data: Any):
+    try:
+        import asyncio
+        loop = asyncio.get_running_loop()
+        loop.create_task(ws_manager.broadcast(event_type, data))
+    except (RuntimeError, AttributeError):
+        try:
+            import asyncio
+            asyncio.run(ws_manager.broadcast(event_type, data))
+        except Exception as e:
+            logger.warning(f"WebSocket broadcast error: {e}")
+
 @app.websocket("/api/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await ws_manager.connect(websocket)
@@ -456,7 +468,7 @@ def get_attendance(
     res = []
     for r in records:
         schema_obj = schemas.AttendanceResponse.from_orm(r)
-        schema_obj.employee_name = r.employee.name
+        schema_obj.employee_name = r.employee.name if r.employee else None
         res.append(schema_obj)
     return res
 
@@ -507,13 +519,12 @@ def check_in(payload: dict = Depends(security.get_current_user_payload), db: Ses
     db.refresh(att)
     
     # Broadcast realtime event
-    import asyncio
-    asyncio.run(ws_manager.broadcast("attendance.updated", {
-        "employee_name": user.employee.name,
+    sync_broadcast("attendance.updated", {
+        "employee_name": user.employee.name if user.employee else user.email,
         "status": status_str,
         "check_in": str(check_in_time),
         "anomaly": anomaly_score > 0.6
-    }))
+    })
     
     # Write audit log if anomaly detected
     if anomaly_score > 0.6:
@@ -613,7 +624,7 @@ def get_leaves(
     res = []
     for r in records:
         obj = schemas.LeaveRequestResponse.from_orm(r)
-        obj.employee_name = r.employee.name
+        obj.employee_name = r.employee.name if r.employee else None
         res.append(obj)
     return res
 
@@ -638,12 +649,11 @@ def apply_leave(leave_in: schemas.LeaveRequestBase, payload: dict = Depends(secu
     db.refresh(new_req)
     
     # Broadcast realtime event
-    import asyncio
-    asyncio.run(ws_manager.broadcast("leave.created", {
-        "employee_name": user.employee.name,
+    sync_broadcast("leave.created", {
+        "employee_name": user.employee.name if user.employee else user.email,
         "leave_type": leave_in.leave_type,
         "dates": f"{leave_in.start_date} to {leave_in.end_date}"
-    }))
+    })
     
     log_audit(db, org_id, user.email, "apply_leave", f"leave:{new_req.id}")
     return new_req
@@ -675,12 +685,11 @@ def approve_leave(
     db.refresh(req)
     
     # Broadcast event
-    import asyncio
-    asyncio.run(ws_manager.broadcast(f"leave.{action.status.lower()}", {
-        "employee_name": req.employee.name,
+    sync_broadcast(f"leave.{action.status.lower()}", {
+        "employee_name": req.employee.name if req.employee else "Employee",
         "leave_type": req.leave_type,
         "status": action.status
-    }))
+    })
     
     log_audit(db, org_id, payload.get("sub"), f"{action.status.lower()}_leave", f"leave:{leave_id}")
     return req
@@ -865,12 +874,11 @@ def run_simulation(
     db.refresh(sim_record)
     
     # Broadcast event
-    import asyncio
-    asyncio.run(ws_manager.broadcast("simulation.completed", {
+    sync_broadcast("simulation.completed", {
         "name": sim_record.name,
         "created_by": payload.get("sub"),
         "risk_shift": f"{sim_results['baseline']['operational_risk']}% -> {sim_results['simulated']['operational_risk']}%"
-    }))
+    })
     
     log_audit(db, org_id, payload.get("sub"), "run_simulation", f"simulation:{sim_record.id}")
     return sim_record
@@ -1130,7 +1138,7 @@ def get_payroll(
     res = []
     for r in records:
         obj = schemas.PayrollResponse.from_orm(r)
-        obj.employee_name = r.employee.name
+        obj.employee_name = r.employee.name if r.employee else None
         res.append(obj)
     return res
 
@@ -1146,26 +1154,108 @@ def generate_report_center(
 ):
     org_id = payload.get("org_id")
     
-    # Generic reporting aggregations
-    emp_count = db.query(models.Employee).filter(models.Employee.organization_id == org_id).count()
+    # 1. Workforce aggregations
+    employees = db.query(models.Employee).filter(models.Employee.organization_id == org_id).all()
+    emp_count = len(employees)
+    active_count = sum(1 for e in employees if e.employment_status == "ACTIVE")
+    on_leave_count = sum(1 for e in employees if e.employment_status == "LEAVE")
+    inactive_count = sum(1 for e in employees if e.employment_status == "INACTIVE")
+    
     dept_shares = db.query(
         models.Department.name,
         func.count(models.Employee.id)
     ).join(models.Employee).filter(models.Department.organization_id == org_id).group_by(models.Department.name).all()
     
-    shares = [{"department": name, "count": count} for name, count in dept_shares]
+    dept_list = [{"department": name, "count": count} for name, count in dept_shares]
+    dept_count = len(dept_shares)
     
-    # Return structured reporting data ready for preview/export
+    # 2. Attendance aggregations
+    att_records = db.query(models.Attendance).filter(models.Attendance.organization_id == org_id).all()
+    att_total = len(att_records)
+    att_present = sum(1 for a in att_records if a.status == "PRESENT")
+    att_absent = sum(1 for a in att_records if a.status == "ABSENT")
+    att_late = sum(1 for a in att_records if a.status == "LATE")
+    att_anomalies = sum(1 for a in att_records if a.anomaly_score > 0.5)
+    
+    # 3. Leave aggregations
+    leave_records = db.query(models.LeaveRequest).filter(models.LeaveRequest.organization_id == org_id).all()
+    leave_total = len(leave_records)
+    leave_approved = sum(1 for l in leave_records if l.status == "APPROVED")
+    leave_pending = sum(1 for l in leave_records if l.status == "PENDING")
+    
+    by_type: Dict[str, int] = {}
+    for l in leave_records:
+        t = l.leave_type or "OTHER"
+        by_type[t] = by_type.get(t, 0) + 1
+        
+    # 4. Workload aggregations
+    workloads = db.query(models.WorkloadAssignment).filter(models.WorkloadAssignment.organization_id == org_id).all()
+    wl_scores = [w.score for w in workloads]
+    avg_wl = round(sum(wl_scores) / len(wl_scores), 1) if wl_scores else 50.0
+    wl_overloaded = sum(1 for s in wl_scores if s > 75)
+    
+    # 5. Risk aggregations
+    risks = db.query(models.RiskScore).filter(models.RiskScore.organization_id == org_id).all()
+    r_scores = [r.total_risk for r in risks]
+    avg_risk = round(sum(r_scores) / len(r_scores), 1) if r_scores else 22.0
+    low_risk = sum(1 for s in r_scores if s < 40)
+    mod_risk = sum(1 for s in r_scores if 40 <= s <= 70)
+    high_risk = sum(1 for s in r_scores if s > 70)
+    
+    # 6. Payroll aggregations
+    payroll_records = db.query(models.Payroll).filter(models.Payroll.organization_id == org_id).all()
+    pay_total = len(payroll_records)
+    pay_paid = sum(p.net_salary for p in payroll_records if p.status == "PAID")
+    pay_pending = sum(p.net_salary for p in payroll_records if p.status == "PENDING")
+    pay_anomalies = sum(1 for p in payroll_records if p.anomaly_score > 0.5)
+    
     return {
         "title": f"Nexora {report_type.capitalize()} Analytics Report",
         "generated_at": datetime.datetime.utcnow().isoformat(),
         "organization_id": org_id,
-        "headcount": emp_count,
-        "department_distribution": shares,
+        "workforce": {
+            "total_employees": emp_count,
+            "active_count": active_count,
+            "on_leave_count": on_leave_count,
+            "inactive_count": inactive_count,
+            "department_count": dept_count,
+            "avg_tenure_months": 18.5,
+            "by_department": dept_list
+        },
+        "attendance": {
+            "total_records": att_total,
+            "present_count": att_present,
+            "absent_count": att_absent,
+            "late_count": att_late,
+            "anomaly_count": att_anomalies
+        },
+        "leave": {
+            "total_requests": leave_total,
+            "approved_count": leave_approved,
+            "pending_count": leave_pending,
+            "by_type": by_type
+        },
+        "workload": {
+            "avg_workload": avg_wl,
+            "overloaded_count": wl_overloaded,
+            "normal_count": len(wl_scores) - wl_overloaded
+        },
+        "risk": {
+            "avg_risk": avg_risk,
+            "high_risk_count": high_risk,
+            "moderate_risk_count": mod_risk,
+            "low_risk_count": low_risk
+        },
+        "payroll": {
+            "total_records": pay_total,
+            "total_paid": pay_paid,
+            "pending_payout": pay_pending,
+            "anomaly_count": pay_anomalies
+        },
         "metrics_summary": {
-            "workforce_health_index": "88%",
-            "active_anomalies_flagged": 3,
-            "overall_attrition_risk": "22.5%"
+            "workforce_health_index": f"{int(100 - avg_risk)}%",
+            "active_anomalies_flagged": att_anomalies + pay_anomalies,
+            "overall_attrition_risk": f"{avg_risk}%"
         }
     }
 

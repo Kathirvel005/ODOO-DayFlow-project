@@ -5,8 +5,8 @@ import AppShell from "@/components/AppShell";
 import { useAuth } from "@/context/AuthContext";
 import { useParams, useRouter } from "next/navigation";
 import { 
-  ArrowLeft, Mail, Phone, MapPin, Calendar, Briefcase, 
-  ShieldAlert, BarChart3, Clock, CalendarDays, Bot, User, CheckSquare 
+  ArrowLeft, Mail, Phone, MapPin, 
+  ShieldAlert, BarChart3, Clock, CalendarDays, Bot 
 } from "lucide-react";
 
 interface Employee {
@@ -379,7 +379,7 @@ export default function EmployeeProfilePage() {
                     </div>
                     {leave.reason && (
                       <div className="text-zinc-400 leading-relaxed text-[11px] italic">
-                        "{leave.reason}"
+                        &ldquo;{leave.reason}&rdquo;
                       </div>
                     )}
                   </div>

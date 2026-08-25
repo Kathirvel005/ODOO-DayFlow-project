@@ -24,11 +24,11 @@ export default function PayrollPage() {
           apiFetch("/api/employees?limit=200")
         ]);
         const payList = Array.isArray(payRes) ? payRes : payRes.payroll || [];
-        const empList = (empRes.employees || []) as any[];
+        const empList = (empRes.data || empRes.employees || []) as any[];
         // Enrich with employee names
         const enriched = payList.map((p: any) => {
           const emp = empList.find((e: any) => e.id === p.employee_id);
-          return { ...p, name: emp?.name || p.employee_id?.slice(0, 8), designation: emp?.designation || "" };
+          return { ...p, name: p.employee_name || emp?.name || p.employee_id?.slice(0, 8), designation: emp?.designation || "" };
         });
         setRecords(enriched);
         setEmployees(empList);
@@ -78,7 +78,7 @@ export default function PayrollPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-zinc-100 flex items-center gap-2">
               <Wallet className="w-6 h-6 text-purple-400" />
               Payroll Center
             </h1>
@@ -98,7 +98,7 @@ export default function PayrollPage() {
               <div className={`w-8 h-8 rounded-lg bg-${color}-400/10 flex items-center justify-center mb-2`}>
                 <Icon className={`w-4 h-4 text-${color}-400`} />
               </div>
-              <div className="text-xl font-bold text-white">{value}</div>
+              <div className="text-xl font-black kpi-value">{value}</div>
               <div className="text-xs text-zinc-400 mt-1">{label}</div>
             </div>
           ))}
@@ -106,7 +106,7 @@ export default function PayrollPage() {
 
         {/* Monthly Chart */}
         <div className="glass-card rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-zinc-100 mb-4 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-purple-400" />
             Monthly Payroll Disbursement
           </h3>
@@ -180,7 +180,7 @@ export default function PayrollPage() {
                           <User className="w-3.5 h-3.5 text-purple-400" />
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-white">{r.name}</div>
+                          <div className="text-sm font-medium text-zinc-100">{r.name}</div>
                           <div className="text-xs text-zinc-500">{r.designation}</div>
                         </div>
                       </div>
@@ -191,7 +191,7 @@ export default function PayrollPage() {
                     <td className="px-4 py-3 text-sm text-zinc-300">{formatCurrency(r.base_salary)}</td>
                     <td className="px-4 py-3 text-sm text-green-400">+{formatCurrency(r.allowances)}</td>
                     <td className="px-4 py-3 text-sm text-red-400">-{formatCurrency(r.deductions)}</td>
-                    <td className="px-4 py-3 text-sm font-bold text-white">{formatCurrency(r.net_salary)}</td>
+                    <td className="px-4 py-3 text-sm font-bold text-zinc-100">{formatCurrency(r.net_salary)}</td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.status === "PAID" ? "bg-green-400/10 text-green-400" : "bg-amber-400/10 text-amber-400"}`}>
                         {r.status}

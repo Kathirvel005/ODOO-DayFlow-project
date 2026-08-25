@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import AppShell from "@/components/AppShell";
 import { useAuth } from "@/context/AuthContext";
-import { Bot, Send, User, CheckCircle, HelpCircle, AlertCircle, Info, Sparkles } from "lucide-react";
+import { Bot, Send, User, AlertCircle, Info } from "lucide-react";
 
 interface Message {
   id: string;
@@ -44,10 +44,11 @@ export default function AICopilotPage() {
 
   const handleSend = async (textToSend: string) => {
     if (!textToSend.trim()) return;
+    const now = Date.now().toString();
     
     // Add user message
     const userMsg: Message = {
-      id: Math.random().toString(),
+      id: `${now}-user`,
       sender: "user",
       text: textToSend,
       timestamp: new Date().toISOString()
@@ -64,7 +65,7 @@ export default function AICopilotPage() {
       });
 
       const aiMsg: Message = {
-        id: Math.random().toString(),
+        id: `${now}-ai`,
         sender: "ai",
         text: response.answer,
         timestamp: response.timestamp || new Date().toISOString(),
@@ -78,7 +79,7 @@ export default function AICopilotPage() {
       setMessages(prev => [...prev, aiMsg]);
     } catch (err: any) {
       const errorMsg: Message = {
-        id: Math.random().toString(),
+        id: `${now}-err`,
         sender: "ai",
         text: err.message || "I apologize, but I encountered a security permission or data retrieval error processing your query.",
         timestamp: new Date().toISOString()

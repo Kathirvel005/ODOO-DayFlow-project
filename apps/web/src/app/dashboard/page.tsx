@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import AppShell from "@/components/AppShell";
 import { useAuth } from "@/context/AuthContext";
 import { 
-  Users, Activity, Heart, ShieldAlert, CheckSquare, 
+  Users, Activity, Heart, ShieldAlert, 
   TrendingUp, TrendingDown, Bot, AlertTriangle, Play, Clock
 } from "lucide-react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, BarChart, Bar, Cell } from "recharts";
@@ -33,35 +33,36 @@ export default function DashboardPage() {
         setLoading(true);
         // Fetch headcount
         const empRes = await apiFetch("/api/employees?limit=1");
-        const headcount = empRes.meta.total;
+        const headcount = empRes?.meta?.total ?? empRes?.total ?? 0;
 
         // Fetch workloads
         const wlRes = await apiFetch("/api/workload");
-        const avgWorkload = wlRes.summary.average_workload;
+        const avgWorkload = wlRes?.summary?.average_workload ?? 52.0;
 
         // Fetch risks
         const riskRes = await apiFetch("/api/risk");
-        const risksList = riskRes.risks || [];
+        const risksList = riskRes?.risks || [];
         const avgRisk = risksList.length > 0 
           ? Number((risksList.reduce((acc: number, r: any) => acc + r.total_risk, 0) / risksList.length).toFixed(1)) 
           : 22.0;
 
-        const highRiskCount = riskRes.summary.high_risk_count;
-        const modRiskCount = riskRes.summary.moderate_risk_count;
-        const lowRiskCount = riskRes.summary.low_risk_count;
+        const highRiskCount = riskRes?.summary?.high_risk_count ?? 0;
+        const modRiskCount = riskRes?.summary?.moderate_risk_count ?? 0;
+        const lowRiskCount = riskRes?.summary?.low_risk_count ?? 0;
 
         // Fetch notifications (alerts)
         const notifRes = await apiFetch("/api/notifications");
-        setAlerts(notifRes.slice(0, 3));
+        setAlerts(Array.isArray(notifRes) ? notifRes.slice(0, 3) : []);
 
         // Fetch audit logs (activities)
         const auditRes = await apiFetch("/api/audit");
-        setActivities(auditRes.slice(0, 4));
+        setActivities(Array.isArray(auditRes) ? auditRes.slice(0, 4) : []);
 
         // Calculate derived values
         const calculatedHealth = Number((100 - avgRisk).toFixed(1));
-        const activeAttendance = 94.0 + Number((Math.random() * 2).toFixed(1));
-        const productivity = 88.0 - Number((wlRes.summary.overloaded_employees * 0.5).toFixed(1));
+        const activeAttendance = 95.4;
+        const overloadedCount = wlRes?.summary?.overloaded_employees ?? wlRes?.summary?.overloaded_count ?? 0;
+        const productivity = Math.max(70.0, 88.0 - Number((overloadedCount * 0.5).toFixed(1)));
 
         setMetrics({
           headcount,
@@ -152,7 +153,7 @@ export default function DashboardPage() {
               <Users className="w-4 h-4 text-purple-400" />
             </div>
             <div className="mt-3">
-              <div className="text-2xl font-black text-zinc-100">{metrics.headcount}</div>
+              <div className="text-2xl font-black kpi-value">{metrics.headcount}</div>
               <div className="flex items-center gap-1 text-[10px] text-green-400 font-semibold mt-1">
                 <TrendingUp className="w-3 h-3" />
                 +4% vs last quarter
@@ -167,7 +168,7 @@ export default function DashboardPage() {
               <Heart className="w-4 h-4 text-emerald-400" />
             </div>
             <div className="mt-3">
-              <div className="text-2xl font-black text-zinc-100">{metrics.health}%</div>
+              <div className="text-2xl font-black kpi-value">{metrics.health}%</div>
               <div className="flex items-center gap-1 text-[10px] text-green-400 font-semibold mt-1">
                 <TrendingUp className="w-3 h-3" />
                 +1.2% optimal
@@ -182,7 +183,7 @@ export default function DashboardPage() {
               <ShieldAlert className="w-4 h-4 text-amber-500" />
             </div>
             <div className="mt-3">
-              <div className="text-2xl font-black text-zinc-100">{metrics.risk}%</div>
+              <div className="text-2xl font-black kpi-value">{metrics.risk}%</div>
               <div className="flex items-center gap-1 text-[10px] text-amber-400 font-semibold mt-1">
                 <TrendingUp className="w-3 h-3" />
                 +0.8% attention B
@@ -197,7 +198,7 @@ export default function DashboardPage() {
               <Activity className="w-4 h-4 text-cyan-400" />
             </div>
             <div className="mt-3">
-              <div className="text-2xl font-black text-zinc-100">{metrics.productivity}%</div>
+              <div className="text-2xl font-black kpi-value">{metrics.productivity}%</div>
               <div className="flex items-center gap-1 text-[10px] text-red-400 font-semibold mt-1">
                 <TrendingDown className="w-3 h-3" />
                 -1.4% overload burden
@@ -212,7 +213,7 @@ export default function DashboardPage() {
               <Clock className="w-4 h-4 text-green-400" />
             </div>
             <div className="mt-3">
-              <div className="text-2xl font-black text-zinc-100">{metrics.attendanceRate}%</div>
+              <div className="text-2xl font-black kpi-value">{metrics.attendanceRate}%</div>
               <div className="flex items-center gap-1 text-[10px] text-green-400 font-semibold mt-1">
                 <TrendingUp className="w-3 h-3" />
                 +0.3% present
@@ -227,7 +228,7 @@ export default function DashboardPage() {
               <Bot className="w-4 h-4 text-purple-400" />
             </div>
             <div className="mt-3">
-              <div className="text-2xl font-black text-zinc-100">{metrics.aiConfidence}%</div>
+              <div className="text-2xl font-black kpi-value">{metrics.aiConfidence}%</div>
               <div className="flex items-center gap-1 text-[10px] text-zinc-500 font-mono mt-1">
                 Active models: v1.4
               </div>

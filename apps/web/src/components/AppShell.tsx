@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { 
   LayoutDashboard, Users, GitBranch, Clock, CalendarDays, BarChart3, 
   ShieldAlert, Compass, PlayCircle, Bot, Wallet, ClipboardList, 
-  Settings, LogOut, Bell, Search, Terminal, AlertTriangle, Info, CheckCircle,
+  LogOut, Bell, Search, Terminal, AlertTriangle, Info,
   Sun, Moon
 } from "lucide-react";
 
@@ -127,11 +127,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           const payload = JSON.parse(event.data);
           // Prepend new notification or alert
           const newNotif: NotificationItem = {
-            id: Math.random().toString(),
+            id: `ws-${Date.now()}-${payload.event || "alert"}`,
             title: payload.event === "attendance.updated" ? "Attendance Alert" : 
                    payload.event === "simulation.completed" ? "Simulation Lab Alert" : "Live Alert",
-            message: payload.data.message || `${payload.event}: ${JSON.stringify(payload.data)}`,
-            type: payload.data.anomaly ? "CRITICAL" : "INFO",
+            message: payload.data?.message || `${payload.event}: ${JSON.stringify(payload.data)}`,
+            type: payload.data?.anomaly ? "CRITICAL" : "INFO",
             is_read: false,
             created_at: new Date().toISOString()
           };
